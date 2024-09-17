@@ -1,7 +1,7 @@
-import React, { useContext, useState } from "react";
-import axios from "../../../axiosConfig";
+import { useContext, useState } from "react";
+// import axios from "../../../axiosConfig";
 import { useRef } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link} from "react-router-dom";
 import classes from "./Login.module.css";
 import { FiEye, FiEyeOff } from "react-icons/fi";
 import About from "../../About/AboutPage";

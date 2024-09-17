@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import axios from "../../../axiosConfig";
 import { useParams } from "react-router-dom";
 import Header from "../../Header/Header";
@@ -52,7 +52,7 @@ function QuestionAndAnswer() {
       }
     }
     fetchData();
-  }, []);
+  }, );
   //Updates the newAnswer state whenever the value of the textarea changes.
   const handleAnswerChange = (e) => {
     setNewAnswer(e.target.value);
@@ -68,7 +68,7 @@ function QuestionAndAnswer() {
     }
 
     try {
-      const response = await axios.post(
+      await axios.post(
         "/answer",
         { userid, question_id: id, answer: answerValue },
         {
@@ -105,12 +105,13 @@ function QuestionAndAnswer() {
               answers.map((answer) => (
                 <div key={answer.id} className={classes.answer_item}>
                   <div className={classes.answer_container}>
-                    <img
-                      src={questionerIMG}
-                      alt={`${question.username}'s image`}
-                      className={classes.questionerImage}
-                      style={{ width: "70px", height: "70px" }}
-                    />
+                  <img
+  src={questionerIMG}
+  alt={`${question.username}`}
+  className={classes.questionerImage}
+  style={{ width: "70px", height: "70px" }}
+/>
+
                     <p className={classes.answer_username}>
                       {answer.username}
                     </p>

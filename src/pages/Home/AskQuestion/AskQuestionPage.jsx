@@ -1,5 +1,5 @@
 
-import React, { useRef, useContext } from "react";
+import { useRef, useContext } from "react";
 import { BsArrowRightCircleFill } from "react-icons/bs";
 import { AppState } from "../../../App";
 import axios from "../../../axiosConfig";
@@ -14,6 +14,7 @@ function AskQuestionPage() {
   const navigate = useNavigate();
   const titleDom = useRef();
   const detailDom = useRef();
+
 
   async function handle(e) {
     e.preventDefault();
@@ -30,7 +31,7 @@ function AskQuestionPage() {
       if (!token) {
         throw new Error("No token found");
       }
-     const response= await axios.post(
+     await axios.post(
         "/question",
         { userid: userid, title: titleValue, description: detailValue },
         {

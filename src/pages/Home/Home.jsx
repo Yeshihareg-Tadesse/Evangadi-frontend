@@ -87,7 +87,7 @@ function Home() {
                     <div>
                       <img
                         src={questionerIMG}
-                        alt={`${question.username}'s image`}
+                        alt={question.username}
                         className={classes.questionerImage}
                         style={{ width: "80px", height: "80px" }}
                       />

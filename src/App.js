@@ -86,7 +86,7 @@ function App() {
     if (token) {
       checkUser();
     }
-  }, [token]);
+  }, );
 
   return (
     //Makes the context available to all child components.

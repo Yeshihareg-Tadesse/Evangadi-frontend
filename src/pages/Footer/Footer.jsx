@@ -1,4 +1,3 @@
-import React from "react";
 import "./Footer.css";
 // import "../../assets/bootstrap.min.css";
 import { FaFacebook, FaInstagram, FaYoutube } from "react-icons/fa";
@@ -66,13 +65,13 @@ function Footer() {
                   <h5>Useful Links</h5>
                   <ul className="list-menu">
                     <li>
-                      <a href="#">How it works</a>
+                      <a href="#section">How it works</a>
                     </li>
                     <li>
-                      <a href="#">Terms of Service</a>
+                      <a href="#section">Terms of Service</a>
                     </li>
                     <li>
-                      <a href="#">Privacy Policy</a>
+                      <a href="#section">Privacy Policy</a>
                     </li>
                   </ul>
                 </div>

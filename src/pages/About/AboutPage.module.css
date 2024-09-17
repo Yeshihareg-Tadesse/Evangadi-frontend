@@ -22,7 +22,7 @@
 } 
 .about_container >h2{
  background: linear-gradient(310deg, #000000, #e33f00);
-  -webkit-background-clip: text;
+  /* -webkit-background-clip: text; */
   -webkit-text-fill-color: transparent;
   color: transparent;
   font-size: 2.5rem;
