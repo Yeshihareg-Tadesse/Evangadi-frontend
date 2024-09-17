@@ -1,0 +1,420 @@
+import React, { useContext } from "react";
+import classes from "./Header.module.css";
+import { Link, useNavigate } from "react-router-dom";
+import { AppState } from "../../App";
+// import { BsArrowRightCircleFill } from "react-icons/bs";
+
+function Header() {
+  const { isLoggedIn, logout} = useContext(AppState);
+  const navigate = useNavigate();
+  const handleLogout = () => {
+    logout();
+    navigate("/login");
+  };
+
+  return (
+    <section
+      className={`navbar navbar-expand-lg fixed-top shadow-sm ${classes.header_contanier}`}
+    >
+      <div className="container px-md-4">
+        <div className="navbar-brand">
+          <Link to={"/"}>
+            <img
+              src="https://forum.ibrodev.com/assets/evangadi-logo-5fea54cc.png"
+              alt="evangadi-form"
+            />
+          </Link>
+        </div>
+        <button
+          className="navbar-toggler"
+          type="button"
+          data-bs-toggle="offcanvas"
+          data-bs-target="#offcanvasNavbar"
+          aria-controls="offcanvasNavbar"
+          aria-label="Toggle navigation"
+        >
+          <span className="navbar-toggler-icon"></span>
+        </button>
+        <div
+          className="offcanvas offcanvas-end"
+          tabIndex="-1"
+          id="offcanvasNavbar"
+          aria-labelledby="offcanvasNavbarLabel"
+        >
+          <div className="offcanvas-header">
+            <button
+              type="button"
+              className="btn-close"
+              data-bs-dismiss="offcanvas"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div className="offcanvas-body links">
+            <ul className="navbar-nav justify-content-end flex-grow-1 pe-3">
+              <li className="nav-item">
+                <Link className="nav-link " to={"/"}>
+                  Home
+                </Link>
+              </li>
+              <li className="nav-item">
+                <Link className="nav-link" to={"/"}>
+                  How it works
+                </Link>
+              </li>
+
+              <li className="nav-item ">
+                {isLoggedIn ? (
+                  <button
+                    data-bs-dismiss="offcanvas"
+                    className={`nav-link  ${classes.logout}`}
+                    onClick={handleLogout}
+                  >
+                    Logout
+                  </button>
+                ) : (
+                  <Link to="/login">
+                    <button
+                      data-bs-dismiss="offcanvas"
+                      className={`nav-link ${classes.sigIn}`}
+                      style={{backgroundColor: "#FE8082"}}
+                    >
+                      SIGN IN
+                    </button>
+                  </Link>
+                )}
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+export default Header;
+import React, { useState } from "react";
+import axios from "../../../axiosConfig";
+import { useRef } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import classes from "./Login.module.css";
+import { FiEye, FiEyeOff } from "react-icons/fi";
+import About from "../../About/AboutPage";
+import Header from "../../Header/Header";
+import Footer from "../../Footer/Footer";
+
+//This Login component handles user login by capturing the email and password input, validating the form, submitting the data to the server, and managing the response. It uses useRef to access form field values, useNavigate to handle navigation, and axios to make HTTP requests. If the login is successful, the user is redirected to the home page; if there is an error, it is displayed to the user.
+
+function Login() {
+  //  const [isSignUp, setIsSignUp] = useState(true);
+  // const [error, setError] = useState("");
+   const [showPassword, setShowPassword] = useState(false);
+   const togglePasswordVisibility = () => {
+     setShowPassword(!showPassword);
+   };
+
+  // Initializes the navigate function
+  const navigate = useNavigate();
+  //Creates a reference to the email and Password input field and allowing you to access its value directly.
+  const userEmail = useRef();
+  const userPassword = useRef();
+
+  //handle form submission.
+  async function handleSubmit(e) {
+    e.preventDefault();
+    //Retrieves the current value of the email & Password input field.
+    const userEmailValue = userEmail.current.value;
+    const userPasswordValue = userPassword.current.value;
+    //Checks if either the email or password fields are empty.
+    if (!userEmailValue || !userPasswordValue) {
+      alert("Please provide all required information");
+      return; // Stops further execution if validation fails
+    }
+
+    try {
+      //Sends a POST request to the /user/login endpoint with the email and password. The await keyword pauses execution until the request completes.
+      const { data } = await axios.post("/user/login", {
+        email: userEmailValue,
+        password: userPasswordValue,
+      });
+      //Stores the token received from the server in local storage for authentication purposes.
+      localStorage.setItem("token", data.token);
+      //Displays an alert indicating a successful login.
+      alert("Login successfully");
+      //Redirects the user to the home page after a successful login
+      navigate("/");
+
+      //to handle any errors that occur during the HTTP request.
+    } catch (error) {
+      //Displays an alert with the error message from the server response, if available.
+      alert(error?.response?.data?.msg);
+      //Logs the error message from the server response, if available.
+      console.log(error?.response?.data?.msg);
+      //Logs the general error message
+      console.log(error.message);
+    }
+  }
+
+  return (
+    <>
+      <Header />
+      <br />
+      <section className={classes.loginContanier}>
+        <div className="container px-md-5">
+          <div className="row">
+            <div className="col-12 col-md-5 shadow auth mx-md-4 my-md-5">
+              <div className={classes.login_inner}>
+                <div className={classes.Carousel_inner}>
+                  <div className="carousel-item active">
+                    <h3>Login to your account</h3>
+                    <div>
+                      Don't have an account?
+                      <span>
+                        <Link to={"/register"}>Create a new account</Link>
+                      </span>
+                    </div>
+                    <form onSubmit={handleSubmit}>
+                      <div className={classes.from_input}>
+                        <input
+                          type="Email"
+                          placeholder="Email"
+                          ref={userEmail}
+                        />
+                        {/* {error && (
+                          <span style={{ color: "red" }}>{error}</span>
+                        )} */}
+                      </div>
+                      <br />
+                      <div
+                        className={`${classes.from_input} ${classes.password}`}
+                      >
+                        <input
+                          type={showPassword ? "text" : "password"}
+                          placeholder="password"
+                          ref={userPassword}
+                        />
+                        <span
+                          className={classes.password_toggle}
+                          onClick={togglePasswordVisibility}
+                        >
+                          {showPassword ? (
+                            <FiEye />
+                          ) : (
+                            <FiEyeOff classNAme={classes.passHash} />
+                          )}
+                        </span>
+                        {/* {error && (
+                          <span style={{ color: "red" }}>{error}</span>
+                        )} */}
+                      </div>
+                      <div className={classes.forget}>
+                        <Link to={"/login"}>Forgot password</Link>
+                      </div>
+                      <div className={classes.btn}>
+                        <button type="submit">Login</button>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="col-12 col-md-6 ">
+              <About />
+            </div>
+          </div>
+        </div>
+      </section>
+      <Footer />
+    </>
+  );
+}
+export default Login;
+
+//import Route for defining paths and components,Routes for grouping routes, and useNavigate for programmatic navigation.
+import { Route, Routes, useNavigate } from "react-router-dom";
+import Home from "./pages/Home/Home.jsx";
+import Login from "./pages/Home/Login/Login.jsx";
+import Register from "./pages/Home/SignIn&SIgnUp/Register.jsx";
+// Imports an instance of axios (a library for making HTTP requests) configured with your settings.
+import axios from "./axiosConfig.jsx";
+// Imports React hooks. useState is used to manage state, and useEffect is used to perform side effects (e.g., data fetching).
+import { useEffect, useState } from "react";
+//Imports createContext to create a context for state management.
+import { createContext } from "react";
+// import QuestionAndAnswer from "./pages/QuestionAndAnswer.jsx";
+import AskQuestionPage from "./pages/Home/AskQuestion/AskQuestionPage.jsx";
+import QuestionAndAnswer from "./pages/Home/Question&Answer/QuestionAndAnswer.jsx";
+// import SignUpSignInPage from "./pages/SignUpSignInPage.jsx";
+import AboutPage from "./pages/About/AboutPage.jsx";
+import Header from "./pages/Header/Header.jsx";
+import Footer from "./pages/Footer/Footer.jsx";
+import "bootstrap/dist/css/bootstrap.min.css";
+
+//provide and consume state throughout the application.
+export const AppState = createContext();
+
+function App() {
+   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  //Initializes state for the user object.
+  const [user, setUser] = useState({});
+  //Initializes the navigate function
+  const navigate = useNavigate();
+  //Retrieves the token from local storage, which used for authenticated requests.
+  const token = localStorage.getItem("token");
+
+  const login = (credentials) => {
+    setIsLoggedIn(true);
+    setUser(credentials.username);
+  };
+ 
+   const logout = () => {
+     setIsLoggedIn(false);
+     setUser({});
+     localStorage.removeItem("token");
+     navigate("/login");
+   };
+  // to fetch user information.
+  async function checkUser() {
+    try {
+      //Sends a GET request to /user/checkUser with the Authorization header containing the token
+      const { data } = await axios.get("/user/checkUser", {
+        headers: {
+          Authorization: `Bearer ${token} `,
+        },
+      });
+      //Updates the user state with the data received from the request.
+      setUser(data);
+        setIsLoggedIn(true);
+      //Catches errors if the request fails. Logs the error response and redirects the user to the login page.
+    } catch (error) {
+      console.log(error.response);
+      navigate("/login");
+    }
+  }
+
+  //Calls the checkUser function when the component mounts & runs only once after the initial render.
+  useEffect(() => {
+    checkUser();
+  }, []);
+  return (
+    //Provides the user and setUser available throughout the app.
+    <AppState.Provider value={{ user, setUser, isLoggedIn, login, logout }}>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/question" element={<AskQuestionPage />} />
+        <Route path="/question/:id" element={<QuestionAndAnswer />} />
+        <Route path="/about" element={<AboutPage />} />
+        <Route path="/header" element={<Header />} />
+        <Route path="/footer" element={<Footer />} />
+      </Routes>
+    </AppState.Provider>
+  );
+}
+
+export default App;
+//import Route for defining paths and components,Routes for grouping routes, and useNavigate for programmatic navigation.
+import { Route, Routes, useNavigate } from "react-router-dom";
+import Home from "./pages/Home/Home.jsx";
+import Login from "./pages/Home/Login/Login.jsx";
+import Register from "./pages/Home/SignIn&SIgnUp/Register.jsx";
+// Imports an instance of axios (a library for making HTTP requests) configured with your settings.
+import axios from "./axiosConfig.jsx";
+// Imports React hooks. useState is used to manage state, and useEffect is used to perform side effects (e.g., data fetching).
+import { useEffect, useState } from "react";
+//Imports createContext to create a context for state management.
+import { createContext } from "react";
+// import QuestionAndAnswer from "./pages/QuestionAndAnswer.jsx";
+import AskQuestionPage from "./pages/Home/AskQuestion/AskQuestionPage.jsx";
+import QuestionAndAnswer from "./pages/Home/Question&Answer/QuestionAndAnswer.jsx";
+// import SignUpSignInPage from "./pages/SignUpSignInPage.jsx";
+import AboutPage from "./pages/About/AboutPage.jsx";
+import Header from "./pages/Header/Header.jsx";
+import Footer from "./pages/Footer/Footer.jsx";
+import "bootstrap/dist/css/bootstrap.min.css";
+
+//provide and consume state throughout the application.
+export const AppState = createContext();
+
+function App() {
+   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  //Initializes state for the user object.
+  const [user, setUser] = useState({});
+  //Initializes the navigate function
+  const navigate = useNavigate();
+  //Retrieves the token from local storage, which used for authenticated requests.
+  const token = localStorage.getItem("token");
+
+  const login = (credentials) => {
+    setIsLoggedIn(true);
+    setUser(credentials.username);
+  };
+ 
+   const logout = () => {
+     setIsLoggedIn(false);
+     setUser({});
+     localStorage.removeItem("token");
+     navigate("/login");
+   };
+  // to fetch user information.
+  async function checkUser() {
+    try {
+      //Sends a GET request to /user/checkUser with the Authorization header containing the token
+      const { data } = await axios.get("/user/checkUser", {
+        headers: {
+          Authorization: `Bearer ${token} `,
+        },
+      });
+      //Updates the user state with the data received from the request.
+      setUser(data);
+        setIsLoggedIn(true);
+      //Catches errors if the request fails. Logs the error response and redirects the user to the login page.
+    } catch (error) {
+      console.log(error.response);
+      navigate("/login");
+    }
+  }
+
+  //Calls the checkUser function when the component mounts & runs only once after the initial render.
+  useEffect(() => {
+    checkUser();
+  }, []);
+  return (
+    //Provides the user and setUser available throughout the app.
+    <AppState.Provider value={{ user, setUser, isLoggedIn, login, logout }}>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/question" element={<AskQuestionPage />} />
+        <Route path="/question/:id" element={<QuestionAndAnswer />} />
+        <Route path="/about" element={<AboutPage />} />
+        <Route path="/header" element={<Header />} />
+        <Route path="/footer" element={<Footer />} />
+      </Routes>
+    </AppState.Provider>
+  );
+}
+
+export default App;
+
+
+considering all the above code i have get problem .the first is after i register and login in this{isLoggedIn ? (
+                  <button
+                    data-bs-dismiss="offcanvas"
+                    className={nav-link  ${classes.logout}}
+                    onClick={handleLogout}
+                  >
+                    Logout
+                  </button>
+                ) : (
+                  <Link to="/login">
+                    <button
+                      data-bs-dismiss="offcanvas"
+                      className={nav-link ${classes.sigIn}}
+                      style={{backgroundColor: "#FE8082"}}
+                    >
+                      SIGN IN
+                    </button>
+                  </Link>
+                )} code does not executed i.e it does changed to signin to logput but after i refreshed it works the code.why this things happen? how do i make the code to work the code when it start the page?
